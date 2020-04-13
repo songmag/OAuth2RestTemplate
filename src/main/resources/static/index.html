@@ -1,0 +1,102 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<title>Demo</title>
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width" />
+<base href="/" />
+<link rel="stylesheet" type="text/css"
+    href="/webjars/bootstrap/css/bootstrap.min.css" />
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript"
+    src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <h1>Login</h1>
+    <div class="container unauthenticated">
+        <div>
+            With GitHub: <a href="/user">click here</a>
+        </div>
+        <div>
+            With FaceBook: <a href="https://www.facebook.com/v6.0/dialog/oauth?client_id=2389189861379164&redirect_uri=http://localhost:8080/user/login" target="_blank">Click Here</a>
+        </div>
+        <div>
+            With Kakaotalk :<a href="https://kauth.kakao.com/oauth/authorize?client_id=8f965862ce35b5e85e1ef6d42575398e&redirect_uri=http://localhost:8080/kakaologin&response_type=code" type="_blank">login</a>
+        </div>
+        <div><button onclick="onclickEvent()">button</button></div>
+    </div>
+    <div class="container authenticated" style="display: none">
+        Logged in as: <span id="user"></span>
+        <div>
+            <a href="https:////www.facebook.com/v6.0/dialog/oauth?client_id=2389189861379164&redirect_uri=http://localhost:8080/user/login" onClick="logout()" class="btn btn-primary">Logout</a>
+        </div>
+    </div>
+
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/ko_KR/sdk.js#xfbml=1&version=v6.0&appId=2389189861379164&autoLogAppEvents=1"></script>
+
+    <div class="fb-login-button" data-width="" data-size="large" onclick="onclick()" data-button-type="continue_with" data-layout="default" data-auto-logout-link="true" data-use-continue-as="true"></div>
+
+    <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
+    <script type="text/javascript">
+        function onclickEvent(){
+            FB.login(function(response){
+                jsonData = {
+                    'accessToken':response.authResponse.accessToken,
+                    'userID' :response.authResponse.userID,
+                    'expiresIn' : response.authResponse.expiresIn,
+                    'signedRequest' :response.authResponse.signedRequest,
+                    'graphDomain' : response.authResponse.graphDomain
+                };
+                $.ajax({
+                    type:"POST",
+                    url:"/user/check",
+                    data:JSON.stringify(jsonData),
+                    contentType:"application/json",
+                    success:function(responsePost){
+                        console.log(response);
+                    },
+                    dataType:"application/json"
+                });
+            });
+        };
+       FB.getLoginStatus(function (response){
+
+       });
+        </script>
+</body>
+</html>
+
+
+<!--
+
+          $.ajaxSetup({
+            beforeSend : function(xhr, settings) {
+              if (settings.type == 'POST' || settings.type == 'PUT'
+                  || settings.type == 'DELETE') {
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/
+                    .test(settings.url))) {
+                  // Only send the token to relative URLs i.e. locally.
+                  xhr.setRequestHeader("X-XSRF-TOKEN", Cookies
+                      .get('XSRF-TOKEN'));
+                }
+              }
+            }
+          });
+          $.get("/user", function(data) {
+              $("#user").html(data.name);
+              $(".unauthenticated").hide();
+              $(".authenticated").show();
+          });
+          var logout = function() {
+            $.post("/logout", function() {
+              $("#user").html('');
+              $(".unauthenticated").show();
+              $(".authenticated").hide();
+            })
+            return true;
+          }
+-->
